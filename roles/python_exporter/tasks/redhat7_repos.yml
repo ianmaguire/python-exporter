@@ -1,0 +1,24 @@
+- name: ensure /etc/yum.repos.d/epel.repo is absent
+  file: 
+    path: /etc/yum.repos.d/epel.repo 
+    force: yes
+    state: absent
+
+- name: ensure /etc/yum.repos.d/RES-64-RES7.repo is absent
+  file: 
+    path: /etc/yum.repos.d/RES-64-RES7.repo
+    force: yes
+    state: absent
+
+- name: Put SAN-RES7.repo in /etc/yum.repos.d/SAN-RES7.repo
+  template: src=roles/python_exporter/templates/SAN-RES7.repo.j2 dest=/etc/yum.repos.d/SAN-RES7.repo
+
+
+- name: Add Centos 7 extras repo
+  yum_repository: 
+    name: extras
+    description: extras yum repo
+    baseurl: http://mirror.centos.org/centos/7/extras/x86_64/
+    gpgcheck: no
+    enabled: no
+

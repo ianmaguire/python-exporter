@@ -1,0 +1,25 @@
+---
+# vars file for python_exporter
+python_exporter_templates:
+  health: 
+    src: "project/templates/health.html"
+    dest: "{{ python_exporter_templates_dir }}/health.html" 
+  index:
+    src: "project/templates/index.html"
+    dest: "{{ python_exporter_templates_dir }}/index.html"
+  metrics:
+    src: "project/templates/metrics.html"
+    dest: "{{ python_exporter_templates_dir }}/metrics.html"
+python_exporter_stylesheets:
+  style:
+    src: "project/static/css/style.css"
+    dest: "{{ python_exporter_css_dir }}/style.css"
+python_exporter_directories:
+  - "{{ python_exporter_root_dir }}"
+  - "{{ python_exporter_log_dir }}"
+  - "{{ python_exporter_app_dir }}"
+  - "{{ python_exporter_modules_dir }}"
+  - "{{ python_exporter_templates_dir }}"
+  - "{{ python_exporter_static_dir }}"
+  - "{{ python_exporter_css_dir }}"
+  

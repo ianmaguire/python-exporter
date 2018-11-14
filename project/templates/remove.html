@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>{{ data.title }}</title>
+  </head>
+  <h1>{{ data.title }}</h1>
+  <body>
+  {% if data.status %}
+    <h2>Status: {{ data.status }}</h2>
+  {% else %}
+    <h2>Status: Error. Status unavailable</h2>
+  {% endif %}
+  </body>
+</html>

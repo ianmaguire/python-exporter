@@ -1,0 +1,12 @@
+Flask
+ConfigParser
+#prometheus_client
+#flask_prometheus
+jsonpickle
+requests
+pexpect
+urllib3
+distro==1.0.4
+#psutil
+#uwsgi
+#supervisor

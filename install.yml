@@ -1,0 +1,12 @@
+---
+# This role sets up the Python Exporter Clients
+# ansible-playbook -i /path/to/inventory-file install.yml -b -k -u username 
+- name: Python Exporter
+  hosts: 
+    - python-exporter
+  roles:
+    - python_exporter
+  tasks:
+    - include: roles/python_exporter/tasks/install.yml
+
+

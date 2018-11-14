@@ -1,0 +1,221 @@
+## For Debugging 
+
+# - name: Template variables
+#   debug:
+#     msg: "{{ item.key }}: src={{ item.value.src }}, dest={{ item.value.dest }}"
+#   with_dict: "{{ python_exporter_templates }}"
+
+# - name: Plugin variables
+#   debug:
+#     msg: "{{ item.key }}: src={{ item.value.src }}, dest={{ item.value.dest }}"
+#   with_dict: "{{ python_exporter_modules }}"
+
+# - name: CSS variables
+#   debug:
+#     msg: "{{ item.key }}: src={{ item.value.src }}, dest={{ item.value.dest }}"
+#   with_dict: "{{ python_exporter_stylesheets }}"
+
+# - name: Hostvars
+#   debug:
+#     msg: "First pip mirror host: {{ hostvars[groups['pip-mirror'][0]]['inventory_hostname'] }}"
+
+## Yum setup
+
+- include: redhat5_repos.yml
+  when: 
+    - ansible_os_family == "RedHat" and ansible_distribution_major_version == "5"
+
+- include: redhat6_repos.yml
+  when: 
+    - ansible_os_family == "RedHat" and ansible_distribution_major_version == "6"
+
+- include: redhat7_repos.yml
+  when: 
+    - ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+
+# - name: Yum clean all
+#   command: yum clean all
+
+
+## Yum packages
+
+- name: Put lm_sensors config file in {{ sysconfig_dir }}
+  copy: src=roles/python_exporter/files/lm_sensors dest={{ sysconfig_dir }}/lm_sensors
+
+- name: Install lm_sensors-sensord # for sensor related metrics
+  package:
+    name: lm_sensors-sensord
+    state: latest 
+  when: 
+    - ansible_os_family == "RedHat" and ansible_distribution_major_version != "5"
+
+- name: Install lm_sensors-libs # for sensor related metrics
+  package:
+    name: lm_sensors-libs
+    state: latest 
+  when: 
+    - ansible_os_family == "RedHat" and ansible_distribution_major_version != "5"
+
+- name: Install lm_sensors # for sensor related metrics
+  package:
+    name: lm_sensors
+    state: latest 
+
+- name: Restart lm_sensors
+  service:
+    name: lm_sensors
+    state: restarted
+
+- name: Install python-psutil # Error when installed via pip
+  package: 
+    name: python-psutil
+    state: latest
+
+## UWSGI setup for Py_Exporter
+
+- name: Install uwsgi # Error when installed via pip
+  package: 
+    name: uwsgi
+    state: latest
+
+- name: Install uwsgi-plugin-python
+  package: 
+    name: uwsgi-plugin-python
+    state: latest
+
+## Python setup
+
+- name: Create directory /root/.pip
+  file:
+    path: /root/.pip
+    state: directory
+
+- name: Put pip.conf in {{ pip_config_file }}
+  template: src=roles/python_exporter/templates/pip.conf.j2 dest={{ pip_config_file }}
+
+- name: Put easy_install config in {{ easy_install_config_file }}
+  template: src=roles/python_exporter/templates/pydistutils.cfg.j2 dest={{ easy_install_config_file }}
+
+- name: Install pip
+  package: 
+    name: python-pip
+    state: latest
+
+- name: Upgrade pip
+  command: pip install --upgrade pip
+
+
+## Python packages
+
+- name: Create python_exporter directory structure
+  file: >
+    state=directory
+    path={{ item }}
+    owner=uwsgi
+    group=uwsgi
+  with_items: "{{ python_exporter_directories }}"
+
+- name: Put requirements.txt in {{ python_exporter_root_dir }}
+  copy: src=requirements.txt dest={{ python_exporter_root_dir }}/requirements.txt
+
+- name: Install pip requirements
+  pip:
+    requirements: "{{ python_exporter_root_dir }}/requirements.txt"
+  when: 
+    - ansible_os_family == "RedHat" and ansible_distribution_major_version != "5"
+
+
+## Garbage
+
+# - name: Install pexpect 
+#   package:
+#     name: pexpect
+#     state: latest 
+
+# - name: Install python2-jsonpickle 
+#   package:
+#     name: python2-jsonpickle
+#     state: latest 
+#   when: 
+#     - ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+
+# - name: Install python-jsonpickle 
+#   package:
+#     name: python-jsonpickle
+#     state: latest 
+#   when: 
+#     - ansible_os_family == "RedHat" and ansible_distribution_major_version != "7"
+
+# - name: Install python-requests 
+#   package:
+#     name: python-requests
+#     state: latest 
+#   when: 
+#     - ansible_os_family == "RedHat" and ansible_distribution_major_version == "5"
+
+# - name: Install python-configparser 
+#   package:
+#     name: python-configparser
+#     state: latest 
+
+# - name: Install python-flask 
+#   package:
+#     name: python-flask
+#     state: latest 
+#   when: 
+#     - ansible_os_family == "RedHat" and ansible_distribution_major_version == "5"
+
+
+## Old cruft
+
+
+
+# - name: Remove urllib3 if installed via pip
+#   command: pip uninstall urllib3
+#   ignore_errors: yes
+
+# - name: Install python-urllib3 # Error when installed via pip
+#   package: 
+#     name: python-urllib3
+#     state: absent
+    
+- name: Put uwsgi.ini in {{ uwsgi_ini }}
+  template: src=roles/python_exporter/templates/uwsgi.ini.j2 dest={{ uwsgi_ini }}
+
+## Junk
+
+# - name: Uninstall pip package distro
+#   command: pip uninstall distro
+
+# - name: Install pip package distro via yum
+#   package:
+#     name: python2-distro
+#     state: latest
+
+## Py_Exporter setup
+
+- name: copy config.ini template to {{ python_exporter_app_dir }}
+  template: src=roles/python_exporter/templates/config.ini.j2 dest={{ python_exporter_app_dir }}/config.ini
+
+- name: Put templates in {{ python_exporter_templates_dir }}
+  copy: src={{ item.value.src }} dest={{ item.value.dest }}
+  with_dict: "{{ python_exporter_templates }}"
+
+- name: Put CSS files in {{ python_exporter_css_dir }}
+  copy: src={{ item.value.src }} dest={{ item.value.dest }}
+  with_dict: "{{ python_exporter_stylesheets }}"
+
+- name: Put modules in {{ python_exporter_modules_dir }}
+  copy: src={{ item }} dest={{ python_exporter_modules_dir }}
+  with_fileglob: 
+    - project/modules/*.py
+
+- name: copy app.py to {{ python_exporter_app_dir }}
+  copy: src=project/app.py dest={{ python_exporter_app_dir }}/app.py
+
+- name: Restart python_exporter
+  service:
+    name: uwsgi
+    state: restarted
+
+

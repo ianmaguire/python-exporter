@@ -1,0 +1,16 @@
+---
+# defaults file for python_exporter
+python_exporter_version: 0.0.1
+python_exporter_root_dir: /etc/python_exporter
+python_exporter_log_dir: "{{ python_exporter_root_dir }}/log"
+python_exporter_app_dir: "{{ python_exporter_root_dir }}/app"
+python_exporter_modules_dir: "{{ python_exporter_app_dir }}/modules"
+python_exporter_templates_dir: "{{ python_exporter_app_dir }}/templates"
+python_exporter_static_dir: "{{ python_exporter_app_dir }}/static"
+python_exporter_css_dir: "{{ python_exporter_static_dir }}/css"
+pip_config_file: /root/.pip/pip.conf
+easy_install_config_file: /root/.pydistutils.cfg
+uwsgi_ini: /etc/uwsgi.ini
+supervisor_conf: /etc/supervisord.conf
+supervisor_conf_dir: /etc/supervisor/conf.d/
+sysconfig_dir: /etc/sysconfig/

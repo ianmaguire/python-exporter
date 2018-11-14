@@ -1,0 +1,6 @@
+---
+# handlers file for python_exporter
+- name: restart python_exporter
+  shell: service uwsgi stop && service uwsgi start
+- name: restart lm_sensors
+  service: name=lm_sensors state=restarted

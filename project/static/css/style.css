@@ -1,0 +1,13 @@
+/* custom styles */
+
+element.style {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+pre, xmp, plaintext, listing {
+    display: block;
+    font-family: monospace;
+    white-space: pre;
+    margin: 1em 0px;
+}

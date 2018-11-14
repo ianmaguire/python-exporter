@@ -1,0 +1,7 @@
+# $HOME/.pip/pip.conf
+[global]
+trusted-host = {{ hostvars[groups['pip-mirror'][0]]['inventory_hostname'] }}
+index-url = http://{{ hostvars[groups['pip-mirror'][0]]['inventory_hostname'] }}:3141/root/pypi/+simple/
+
+[search]
+index = http://{{ hostvars[groups['pip-mirror'][0]]['inventory_hostname'] }}:3141/root/pypi/
